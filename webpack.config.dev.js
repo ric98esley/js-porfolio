@@ -1,10 +1,10 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const Dotenv = require('dotenv-webpack');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const Dotenv = require('dotenv-webpack')
 
 module.exports = {
     entry: './src/index.js',
@@ -13,6 +13,8 @@ module.exports = {
         filename: '[name].[contenthash].js',
         assetModuleFilename: 'assets/[hash][ext][query]'
     },
+    mode: 'development',
+    watch: true,
     resolve: {
         extensions: ['.js'],
         alias: {
@@ -42,14 +44,14 @@ module.exports = {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
                 type: 'asset/resource',
                 generator: {
-                    filename : 'assets/images/[hash][ext][query]',
+                    filename : 'images/[hash][ext][query]',
                 }
             },
             {
                 test: /\.(woff|woff2|eot|ttf|otf)$/i,
                 type: "asset/resource",
                 generator: {
-                filename: "assets/fonts/[hash][ext][query]",
+                filename: "fonts/[hash][ext][query]",
                 }
             }
         ]
@@ -63,14 +65,15 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: 'assets/[name].[contenthash].css'
         }),
+        new CopyPlugin(
+            {
+                patterns: [
+                    {
+                        from: path.resolve(__dirname, "src", "assets/images"), to: "assets/images"
+                    }
+                ]
+            }
+        ),
         new Dotenv(),
-        new CleanWebpackPlugin
-    ],
-    optimization: {
-        minimize: true,
-        minimizer: [
-            new CssMinimizerPlugin(),
-            new TerserPlugin()
-        ]
-    }
+    ]
 }
