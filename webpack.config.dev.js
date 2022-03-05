@@ -4,7 +4,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const Dotenv = require('dotenv-webpack')
+const Dotenv = require('dotenv-webpack');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
     entry: './src/index.js',
@@ -14,7 +15,7 @@ module.exports = {
         assetModuleFilename: 'assets/[hash][ext][query]'
     },
     mode: 'development',
-    watch: true,
+    devtool: 'source-map',
     resolve: {
         extensions: ['.js'],
         alias: {
@@ -75,5 +76,17 @@ module.exports = {
             }
         ),
         new Dotenv(),
-    ]
+        new BundleAnalyzerPlugin(),
+    ],
+    devServer: {
+        static: {
+            directory: path.join(__dirname, 'dist'),
+            watch: true,
+        },
+        watchFiles: path.join(__dirname, "./**"),
+        compress: true,
+        historyApiFallback: true,
+        port: 3006,
+        open: true,
+    }
 }
